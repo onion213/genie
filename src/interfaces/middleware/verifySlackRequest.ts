@@ -1,15 +1,14 @@
 // src/middleware/verifySlackRequest.ts
 import type { Context, Next } from "hono";
 import crypto from "crypto";
-import { getSlackSigningSecretByAgentName } from "../utils/getSlackSecretByAgentName";
+import { getSlackSigningSecretByAgentRole } from "@/src/shared/utils/getSlackSecretByAgentRole";
+import { AgentRole } from "@/src/domain/value-objects/AgentRole";
 
-//TODO: define types in one place
-type AgentName = "productManager" | "designer" | "techLead" | "programmer";
 export const verifySlackRequest = () => {
   return async (c: Context, next: Next) => {
     const timestamp = c.req.header("X-Slack-Request-Timestamp");
     const slackSignature = c.req.header("X-Slack-Signature");
-    const agentName = c.req.query("agentName") as AgentName;
+    const agentRole = c.req.query("agentRole") as AgentRole;
 
     if (!timestamp || !slackSignature) {
       return c.text("Bad Request", 400);
@@ -21,7 +20,7 @@ export const verifySlackRequest = () => {
       return c.text("Request timestamp is too old", 400);
     }
 
-    const signingSecret = getSlackSigningSecretByAgentName(agentName);
+    const signingSecret = getSlackSigningSecretByAgentRole(agentRole);
     if (!signingSecret) {
       console.error("Slack Signing Secret is not set.");
       return c.text("Internal Server Error", 500);
@@ -41,9 +40,6 @@ export const verifySlackRequest = () => {
     ) {
       return c.text("Invalid signature", 400);
     }
-
-    // Attach raw body for further processing
-    (c as any).rawBody = body;
 
     await next();
   };
