@@ -9,7 +9,7 @@ export const verifySlackRequest = () => {
   return async (c: Context, next: Next) => {
     const timestamp = c.req.header("X-Slack-Request-Timestamp");
     const slackSignature = c.req.header("X-Slack-Signature");
-    const agentName = c.req.param()["agentName"] as AgentName;
+    const agentName = c.req.query("agentName") as AgentName;
 
     if (!timestamp || !slackSignature) {
       return c.text("Bad Request", 400);
