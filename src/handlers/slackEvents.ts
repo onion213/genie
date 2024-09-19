@@ -5,6 +5,10 @@ export const handleSlackEvents = async (c: Context) => {
   const body = (c as any).rawBody;
   const payload = JSON.parse(body);
 
+  console.info(
+    `Slack Event Received. type=${payload.type}, event=${payload.event}`,
+  );
+
   if (payload.type === "url_verification") {
     // Respond to Slack's URL verification challenge
     return c.json({ challenge: payload.challenge });

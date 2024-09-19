@@ -1,6 +1,6 @@
-import crypto from "crypto";
 // src/middleware/verifySlackRequest.ts
 import type { Context, Next } from "hono";
+import crypto from "crypto";
 import { getSlackSigningSecretByAgentName } from "../utils/getSlackSecretByAgentName";
 
 //TODO: define types in one place
